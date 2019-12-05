@@ -210,7 +210,7 @@ void TOPTREE_mergeShadowVolumeCastByTriangle( in uint i ){
 			// slightly translate the capping plane away from the light to get ride of self shading artifacts
 			cp.plane.w += 0.0001;
 
-			const uint distance = floatBitsToUint( tri2LightDistance(A, B, C, light) );
+			const float distance = tri2LightDistance(A, B, C, vec3(0.0) );
 
 			// init nodes
 			sp1.link[0] = 0;		sp1.link[1] = 0;		sp1.link[2] = floatBitsToUint(distance); 		sp1.link[3] = 0;
@@ -240,7 +240,7 @@ void TOPTREE_mergeShadowVolumeCastByTriangle( in uint i ){
 
 				// [EGSR2106] - depth test support - update the distance from the light each time a new shadow volume is visited
 				if (current%4==0)
-					atomicMin(nodes[current].lnk[2], floatBitsToUint(distance) );
+					atomicMin(nodes[current].link[2], floatBitsToUint(distance) );
 						
 				if(pos<0) // the triangle is fully in the negative halfspace, compute the negative index
 					if (current%4==3) current=0; // if the negative child is a leaf, the triangle is inside a shadow volume. This is an early termination case without merging the shadow volume.
@@ -262,7 +262,7 @@ void TOPTREE_mergeShadowVolumeCastByTriangle( in uint i ){
 					}
 			}
 			// [EGSR2016] - stackless support - write the parent node index of the last intersection subtree visited by the triangle ABC
-			nodes[insertion+2].lnk[2] = lastsubroot;
+			nodes[insertion+2].link[2] = lastsubroot;
 		}
 }
 
